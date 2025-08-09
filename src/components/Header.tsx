@@ -5,7 +5,11 @@ const Header = () => {
     <header className="w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <div className="text-2xl font-bold text-primary">Assina AI</div>
+          <img 
+            src="/lovable-uploads/c70a4458-296d-4a2b-a332-ef9f8eae1b3f.png" 
+            alt="Assina AI" 
+            className="h-8 w-auto"
+          />
         </div>
         
         <nav className="hidden md:flex items-center space-x-6">

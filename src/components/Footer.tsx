@@ -4,7 +4,11 @@ const Footer = () => {
       <div className="container max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="text-2xl font-bold text-primary mb-4">Assina AI</div>
+            <img 
+              src="/lovable-uploads/c70a4458-296d-4a2b-a332-ef9f8eae1b3f.png" 
+              alt="Assina AI" 
+              className="h-8 w-auto mb-4"
+            />
             <p className="text-muted-foreground">
               Especialistas em contratos com segurança jurídica garantida.
             </p>
