@@ -17,8 +17,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-foreground mb-4">Contato</h3>
             <div className="space-y-2 text-muted-foreground">
-              <p>📧 contato@assinai.com.br</p>
-              <p>📱 WhatsApp: (11) 99999-9999</p>
+              <p>📧 contato.assinaai@gmail.com</p>
               <p>⏰ Seg-Sex: 8h às 18h</p>
             </div>
           </div>
@@ -35,7 +34,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-border pt-8 text-center text-muted-foreground">
-          <p>&copy; 2024 Assina AI. Todos os direitos reservados.</p>
+          <p>&copy; 2025 Assina AI. Todos os direitos reservados.</p>
           <p className="text-sm mt-2">
             Protegendo seus acordos com excelência jurídica.
           </p>
