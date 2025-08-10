@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Clock, Shield, Users, Zap } from "lucide-react";
+import { CheckCircle, Clock, Mail, Shield, Users, Zap } from "lucide-react";
 
 const Benefits = () => {
   const benefits = [
@@ -27,6 +27,11 @@ const Benefits = () => {
       icon: <Users className="w-8 h-8 text-primary" />,
       title: "Suporte especializado",
       description: "Nossa equipe está sempre disponível para esclarecer suas dúvidas sobre os contratos."
+    },
+    {
+      icon: <Mail className="w-8 h-8 text-primary" />,
+      title: "Entrega 100% Online",
+      description: "Receba seus contratos direto no seu e-mail em formato PDF, sem burocracia."
     }
   ];
 
