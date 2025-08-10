@@ -16,12 +16,12 @@ const CTA = () => {
             Quero contratar agora
           </Button>
           <div className="text-lg opacity-90">
-            <span className="font-semibold">R$ 30</span> • Entrega em PDF • Até 2 dias
+            <span className="font-semibold">R$ 30</span> • Entrega em PDF • Até 3 dias
           </div>
         </div>
         
         <p className="text-sm opacity-75">
-          ✓ Sem taxa de adesão  ✓ Sem mensalidade  ✓ Pague apenas pelos contratos que usar
+          ✓ Sem taxa de adesão   ✓ Sem mensalidade   ✓ Pague apenas pelos contratos que usar
         </p>
       </div>
     </section>
