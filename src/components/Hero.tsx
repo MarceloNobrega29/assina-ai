@@ -25,9 +25,11 @@ const Hero = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-          <Button variant="hero" size="xl" className="w-full sm:w-auto">
-            Quero contratar agora
-          </Button>
+          <a href="https://wa.me/5583991438932" target="_blank" rel="noopener noreferrer">
+            <Button variant="hero" size="xl" className="w-full sm:w-auto">
+              Quero contratar agora
+            </Button>
+          </a>
           <div className="text-lg text-muted-foreground">
             <span className="font-semibold text-primary">R$ 30</span> por contrato
           </div>
