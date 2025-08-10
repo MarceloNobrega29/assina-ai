@@ -6,7 +6,7 @@ const Header = () => {
       <div className="container max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <img 
-            src="/lovable-uploads/c1ea9ad2-9de7-42e8-bac1-8ca15a98b123.png" 
+            src="/lovable-uploads/ecd2e79d-113a-4025-aa5a-9f21d07cc35c.png" 
             alt="Assina AI" 
             className="h-8 w-auto"
           />

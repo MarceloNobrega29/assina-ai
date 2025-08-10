@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-contract.jpg";
 
 const Hero = () => {
   return (
@@ -7,7 +6,7 @@ const Hero = () => {
       <div className="container max-w-4xl mx-auto text-center">
         <div className="mb-8">
           <img 
-            src={heroImage} 
+            src="/lovable-uploads/c1ea9ad2-9de7-42e8-bac1-8ca15a98b123.png" 
             alt="Contratos digitais seguros" 
             className="w-full max-w-2xl mx-auto rounded-2xl shadow-[var(--shadow-card)]"
           />
