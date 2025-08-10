@@ -12,11 +12,13 @@ const CTA = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-          <Button variant="secondary" size="xl" className="w-full sm:w-auto bg-background text-primary hover:bg-gray-light">
-            Quero contratar agora
-          </Button>
+          <a href="https://wa.me/5583991438932" target="_blank" rel="noopener noreferrer">
+            <Button variant="secondary" size="xl" className="w-full sm:w-auto bg-background text-primary hover:bg-gray-light">
+              Quero contratar agora
+            </Button>
+          </a>
           <div className="text-lg opacity-90">
-            <span className="font-semibold">R$ 30</span> • Entrega em PDF • Até 3 dias
+            <span className="font-semibold">R$ 30</span> • Entrega em PDF • Até 2 dias
           </div>
         </div>
         
