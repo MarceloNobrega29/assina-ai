@@ -5,7 +5,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <img 
-              src="/lovable-uploads/ecd2e79d-113a-4025-aa5a-9f21d07cc35c.png" 
+              src="/lovable-uploads/c1ea9ad2-9de7-42e8-bac1-8ca15a98b123.png" 
               alt="Assina AI" 
               className="h-8 w-auto mb-4"
             />
