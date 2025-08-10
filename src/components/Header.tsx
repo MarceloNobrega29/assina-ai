@@ -24,9 +24,11 @@ const Header = () => {
           </a>
         </nav>
 
-        <Button variant="outline-hero" size="sm">
-          Quero contratar agora
-        </Button>
+        <a href="https://wa.me/5583991438932" target="_blank" rel="noopener noreferrer">
+          <Button variant="outline-hero" size="sm">
+            Quero contratar agora
+          </Button>
+        </a>
       </div>
     </header>
   );
