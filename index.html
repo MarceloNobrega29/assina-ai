@@ -3,14 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/lovable-uploads/bc18d8e3-4ad7-47a0-93f0-cf260d970991.png" type="image/png">
+    <link
+      rel="icon"
+      href="/lovable-uploads/bc18d8e3-4ad7-47a0-93f0-cf260d970991.png"
+      type="image/png"
+    />
     <title>Assina AI - Contratos com Segurança Jurídica Garantida</title>
-    <meta name="description" content="Especialistas na elaboração, revisão e gestão de contratos. R$ 30 por contrato, entrega em PDF, garantia de segurança jurídica. Atendemos empresas e pessoas físicas." />
+    <meta
+      name="description"
+      content="Especialistas na elaboração, revisão e gestão de contratos. R$ 30 por contrato, entrega em PDF, garantia de segurança jurídica. Atendemos empresas e pessoas físicas."
+    />
     <meta name="author" content="Assina AI" />
-    <meta name="keywords" content="contratos, elaboração de contratos, revisão jurídica, segurança jurídica, contratos personalizados, advogados" />
+    <meta
+      name="keywords"
+      content="contratos, elaboração de contratos, revisão jurídica, segurança jurídica, contratos personalizados, advogados"
+    />
 
     <meta property="og:title" content="Assina AI - Contratos com Segurança Jurídica Garantida" />
-    <meta property="og:description" content="Especialistas na elaboração, revisão e gestão de contratos. R$ 30 por contrato, entrega em PDF, garantia de segurança jurídica." />
+    <meta
+      property="og:description"
+      content="Especialistas na elaboração, revisão e gestão de contratos. R$ 30 por contrato, entrega em PDF, garantia de segurança jurídica."
+    />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
@@ -21,6 +34,26 @@
 
   <body>
     <div id="root"></div>
+
+    <!-- Chat Voz Widget -->
+    <div id="cd-widget"></div>
+    <script>
+      (function () {
+        if (window.chatWidgetScriptLoaded) return;
+        window.ChatWidgetConfig = {
+          agentId: "698e888bbd02437b1211b8f8",
+        };
+
+        var chatWidgetScript = document.createElement("script");
+        chatWidgetScript.type = "text/javascript";
+        chatWidgetScript.src =
+          "https://storage.googleapis.com/cdwidget/dist/assets/js/main.js";
+        document.body.appendChild(chatWidgetScript);
+
+        window.chatWidgetScriptLoaded = true;
+      })();
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
