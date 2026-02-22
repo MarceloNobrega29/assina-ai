@@ -1,6 +1,6 @@
-// /api/create-web-call.js (CommonJS - mais estável na Vercel)
+// /api/create-web-call.js  (ESM)
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   try {
     if (req.method !== "POST" && req.method !== "GET") {
       return res.status(405).send("Method Not Allowed");
@@ -17,7 +17,6 @@ module.exports = async (req, res) => {
       return res.status(400).send("Missing agent_id");
     }
 
-    // Chama Retell
     const r = await fetch("https://api.retellai.com/v2/create-web-call", {
       method: "POST",
       headers: {
@@ -34,10 +33,9 @@ module.exports = async (req, res) => {
       return res.status(r.status).send(text);
     }
 
-    // Deve conter access_token
     return res.status(200).type("application/json").send(text);
   } catch (err) {
     console.error("Function crashed:", err);
     return res.status(500).send(`Function crashed: ${String(err)}`);
   }
-};
+}
