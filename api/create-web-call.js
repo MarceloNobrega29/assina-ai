@@ -1,20 +1,26 @@
-// /api/create-web-call.js  (ESM)
+// /api/create-web-call.js (ESM)
 
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST" && req.method !== "GET") {
-      return res.status(405).send("Method Not Allowed");
+      res.statusCode = 405;
+      res.end("Method Not Allowed");
+      return;
     }
 
     const apiKey = process.env.RETELL_API_KEY;
     if (!apiKey) {
       console.error("Missing RETELL_API_KEY env var");
-      return res.status(500).send("Missing RETELL_API_KEY env var");
+      res.statusCode = 500;
+      res.end("Missing RETELL_API_KEY env var");
+      return;
     }
 
     const agent_id = (req.query.agent_id || "").toString();
     if (!agent_id) {
-      return res.status(400).send("Missing agent_id");
+      res.statusCode = 400;
+      res.end("Missing agent_id");
+      return;
     }
 
     const r = await fetch("https://api.retellai.com/v2/create-web-call", {
@@ -30,12 +36,17 @@ export default async function handler(req, res) {
 
     if (!r.ok) {
       console.error("Retell API error:", r.status, text);
-      return res.status(r.status).send(text);
+      res.statusCode = r.status;
+      res.end(text);
+      return;
     }
 
-    return res.status(200).type("application/json").send(text);
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.statusCode = 200;
+    res.end(text);
   } catch (err) {
     console.error("Function crashed:", err);
-    return res.status(500).send(`Function crashed: ${String(err)}`);
+    res.statusCode = 500;
+    res.end(`Function crashed: ${String(err)}`);
   }
 }
