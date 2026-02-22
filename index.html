@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,28 +30,254 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <style>
+      /* Botão flutuante estilo ChatDash */
+      #retell-fab {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        width: 64px;
+        height: 64px;
+        border-radius: 999px;
+        border: 0;
+        cursor: pointer;
+        background: #0b1220;
+        color: #fff;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+        display: grid;
+        place-items: center;
+        z-index: 999999;
+      }
+
+      #retell-fab:active {
+        transform: translateY(1px);
+      }
+
+      /* Painelzinho simples */
+      #retell-panel {
+        position: fixed;
+        right: 18px;
+        bottom: 96px;
+        width: 320px;
+        max-width: calc(100vw - 36px);
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+        overflow: hidden;
+        z-index: 999999;
+        display: none;
+      }
+
+      #retell-panel.open {
+        display: block;
+      }
+
+      #retell-panel header {
+        background: #0b1220;
+        color: #fff;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      #retell-panel header .title {
+        font: 600 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      }
+
+      #retell-panel header .status {
+        font: 500 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        opacity: 0.85;
+      }
+
+      #retell-panel .body {
+        padding: 14px;
+        font: 400 13px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        color: #111827;
+      }
+
+      #retell-panel .controls {
+        display: flex;
+        gap: 10px;
+        padding: 14px;
+        border-top: 1px solid #eef2f7;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid #d6dde8;
+        background: #fff;
+        cursor: pointer;
+        font: 600 13px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      }
+
+      .btn.primary {
+        background: #0b1220;
+        color: #fff;
+        border-color: #0b1220;
+      }
+
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      #retell-error {
+        color: #b42318;
+        font-size: 12px;
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
   </head>
 
   <body>
     <div id="root"></div>
 
-    <!-- Chat Voz Widget -->
-    <div id="cd-widget"></div>
-    <script>
-      (function () {
-        if (window.chatWidgetScriptLoaded) return;
-        window.ChatWidgetConfig = {
-          agentId: "698e888bbd02437b1211b8f8",
-        };
+    <!-- Botão flutuante -->
+    <button id="retell-fab" aria-label="Falar com assistente de voz">
+      <!-- ícone simples -->
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M6 11c0 3.314 2.686 6 6 6s6-2.686 6-6V7a6 6 0 10-12 0v4z"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M4 11a8 8 0 0016 0"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M12 19v2"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
 
-        var chatWidgetScript = document.createElement("script");
-        chatWidgetScript.type = "text/javascript";
-        chatWidgetScript.src =
-          "https://storage.googleapis.com/cdwidget/dist/assets/js/main.js";
-        document.body.appendChild(chatWidgetScript);
+    <!-- Painel do assistente -->
+    <div id="retell-panel" role="dialog" aria-modal="false" aria-label="Assistente de voz">
+      <header>
+        <div>
+          <div class="title">Assina AI</div>
+          <div class="status" id="retell-status">Pronto para iniciar</div>
+        </div>
+        <button class="btn" id="retell-close" style="flex:0 0 auto; padding:8px 10px;">
+          ✕
+        </button>
+      </header>
+      <div class="body">
+        Clique em <b>Iniciar</b>, permita o microfone e fale normalmente.
+        <div id="retell-error"></div>
+      </div>
+      <div class="controls">
+        <button class="btn primary" id="retell-start">Iniciar</button>
+        <button class="btn" id="retell-stop" disabled>Encerrar</button>
+      </div>
+    </div>
 
-        window.chatWidgetScriptLoaded = true;
-      })();
+    <!-- Lógica Web Call (inicia só quando clicar) -->
+    <script type="module">
+      // Web SDK (doc: startCall({ accessToken })) :contentReference[oaicite:1]{index=1}
+      import RetellWebClient from "https://cdn.jsdelivr.net/npm/retell-client-js-sdk/+esm";
+
+      const agentId = "agent_faf6e879f83e5ab3e52f170d8a"; // seu agente
+      const panel = document.getElementById("retell-panel");
+      const fab = document.getElementById("retell-fab");
+      const btnStart = document.getElementById("retell-start");
+      const btnStop = document.getElementById("retell-stop");
+      const btnClose = document.getElementById("retell-close");
+      const statusEl = document.getElementById("retell-status");
+      const errEl = document.getElementById("retell-error");
+
+      const retellWebClient = new RetellWebClient();
+
+      const setStatus = (txt) => (statusEl.textContent = txt);
+      const showError = (msg) => {
+        errEl.style.display = "block";
+        errEl.textContent = msg;
+      };
+      const clearError = () => {
+        errEl.style.display = "none";
+        errEl.textContent = "";
+      };
+
+      const openPanel = () => panel.classList.add("open");
+      const closePanel = () => panel.classList.remove("open");
+
+      fab.addEventListener("click", () => {
+        clearError();
+        openPanel();
+      });
+
+      btnClose.addEventListener("click", () => closePanel());
+
+      // Eventos úteis (doc: on("call_started"/"call_ended")) :contentReference[oaicite:2]{index=2}
+      retellWebClient.on("call_started", () => {
+        setStatus("Em chamada… você pode falar");
+        btnStart.disabled = true;
+        btnStop.disabled = false;
+      });
+
+      retellWebClient.on("call_ended", () => {
+        setStatus("Chamada encerrada");
+        btnStart.disabled = false;
+        btnStop.disabled = true;
+      });
+
+      btnStart.addEventListener("click", async () => {
+        clearError();
+        setStatus("Conectando…");
+
+        btnStart.disabled = true;
+
+        try {
+          // Chama seu backend para criar o web call e pegar access_token :contentReference[oaicite:3]{index=3}
+          const resp = await fetch(`/api/create-web-call?agent_id=${encodeURIComponent(agentId)}`, {
+            method: "POST"
+          });
+
+          if (!resp.ok) {
+            const text = await resp.text();
+            throw new Error(`Erro ao criar web call (${resp.status}): ${text}`);
+          }
+
+          const data = await resp.json();
+
+          if (!data?.access_token) {
+            throw new Error("Resposta inválida: access_token não veio.");
+          }
+
+          // Inicia a chamada no navegador (vai pedir permissão do microfone)
+          await retellWebClient.startCall({
+            accessToken: data.access_token
+          });
+        } catch (e) {
+          console.error(e);
+          setStatus("Falha ao conectar");
+          btnStart.disabled = false;
+          btnStop.disabled = true;
+          showError(
+            "Não consegui iniciar a chamada. Confira se o endpoint /api/create-web-call está online e se sua RETELL_API_KEY está correta."
+          );
+        }
+      });
+
+      btnStop.addEventListener("click", () => {
+        try {
+          retellWebClient.stopCall(); // doc :contentReference[oaicite:4]{index=4}
+        } catch (e) {
+          console.error(e);
+        }
+      });
     </script>
 
     <script type="module" src="/src/main.tsx"></script>
