@@ -10,22 +10,19 @@ import { retellWebClient, agentId } from "./retell-webcall";
 createRoot(document.getElementById("root")!).render(<App />);
 
 /* =========================
-   Integra UI do index.html
+   UI: somente botão flutuante
 ========================= */
 function wireRetellUI() {
-  const panel = document.getElementById("retell-panel");
-  const fab = document.getElementById("retell-fab");
+  const fab = document.getElementById("retell-fab") as HTMLButtonElement | null;
 
+  // Mantemos esses ids porque talvez você ainda use em algum lugar,
+  // mas o painel não aparece (CSS display:none !important).
   const btnStart = document.getElementById("retell-start") as HTMLButtonElement | null;
   const btnStop = document.getElementById("retell-stop") as HTMLButtonElement | null;
-  const btnClose = document.getElementById("retell-close");
-
   const statusEl = document.getElementById("retell-status");
   const errEl = document.getElementById("retell-error");
 
-  if (!panel || !fab || !btnStart || !btnStop || !btnClose || !statusEl || !errEl) return;
-
-  /* ===== helpers ===== */
+  if (!fab || !btnStart || !btnStop || !statusEl || !errEl) return;
 
   const setStatus = (txt: string) => (statusEl.textContent = txt);
 
@@ -43,28 +40,13 @@ function wireRetellUI() {
     errEl.textContent = "";
   };
 
-  const openPanel = () => panel.classList.add("open");
-  const closePanel = () => panel.classList.remove("open");
-
-  /* ===== FAB abre painel ===== */
-
-  fab.addEventListener("click", () => {
-    clearError();
-    openPanel();
-  });
-
-  btnClose.addEventListener("click", () => closePanel());
-
   /* =========================
      EVENTOS RETELL (REAL)
   ========================= */
-
   retellWebClient.on("call_started", () => {
     setStatus("Em chamada… você pode falar");
     btnStart.disabled = true;
     btnStop.disabled = false;
-
-    // 🔥 muda botão para "Encerrar chamada"
     setFabState("active");
   });
 
@@ -72,22 +54,18 @@ function wireRetellUI() {
     setStatus("Chamada encerrada");
     btnStart.disabled = false;
     btnStop.disabled = true;
-
-    // 🔥 volta botão para "Iniciar chamada"
     setFabState("idle");
   });
 
   /* =========================
-     BOTÃO INICIAR
+     Função que inicia a call
   ========================= */
-
-  btnStart.addEventListener("click", async () => {
+  async function startCall() {
     clearError();
 
     setStatus("Conectando…");
     btnStart.disabled = true;
-
-    // 🔥 muda para layout cinza "Conectando..."
+    btnStop.disabled = true;
     setFabState("connecting");
 
     try {
@@ -102,50 +80,69 @@ function wireRetellUI() {
       }
 
       const data = await resp.json();
+      if (!data?.access_token) throw new Error("Resposta inválida: access_token não veio.");
 
-      if (!data?.access_token) {
-        throw new Error("Resposta inválida: access_token não veio.");
-      }
-
-      await retellWebClient.startCall({
-        accessToken: data.access_token,
-      });
+      await retellWebClient.startCall({ accessToken: data.access_token });
+      // call_started vai disparar e mudar pra "active"
     } catch (e) {
       console.error(e);
-
       setStatus("Falha ao conectar");
       btnStart.disabled = false;
       btnStop.disabled = true;
-
-      // 🔥 volta botão para estado inicial
       setFabState("idle");
-
-      showError(
-        "Não consegui iniciar a chamada. Verifique /api/create-web-call e a RETELL_API_KEY."
-      );
+      showError("Não consegui iniciar a chamada. Verifique /api/create-web-call e a RETELL_API_KEY.");
     }
+  }
+
+  /* =========================
+     Função que encerra a call
+  ========================= */
+  function stopCall() {
+    try {
+      retellWebClient.stopCall();
+      // call_ended vai disparar e voltar pra idle
+    } catch (e) {
+      console.error(e);
+      // fallback visual
+      setFabState("idle");
+    }
+  }
+
+  /* =========================
+     Clique no FAB controla tudo
+     - idle -> start
+     - connecting -> ignora
+     - active -> stop
+  ========================= */
+  fab.addEventListener("click", () => {
+    const state = (fab.dataset.state as "idle" | "connecting" | "active" | undefined) ?? "idle";
+
+    if (state === "connecting") return;
+
+    if (state === "active") {
+      stopCall();
+      return;
+    }
+
+    startCall();
   });
 
   /* =========================
-     BOTÃO ENCERRAR
+     Se você clicar nos botões internos (caso use)
   ========================= */
+  btnStart.addEventListener("click", () => startCall());
+  btnStop.addEventListener("click", () => stopCall());
 
-  btnStop.addEventListener("click", () => {
-    try {
-      retellWebClient.stopCall();
-
-      // 🔥 volta estado visual
-      setFabState("idle");
-    } catch (e) {
-      console.error(e);
-    }
-  });
+  // Estado inicial
+  setFabState("idle");
+  setStatus("Pronto para iniciar");
+  btnStart.disabled = false;
+  btnStop.disabled = true;
 }
 
 /* =========================
    Aguarda DOM existir
 ========================= */
-
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", wireRetellUI);
 } else {
