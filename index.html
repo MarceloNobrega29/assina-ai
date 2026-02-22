@@ -140,7 +140,6 @@
 
     <!-- Botão flutuante -->
     <button id="retell-fab" aria-label="Falar com assistente de voz">
-      <!-- ícone simples -->
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
           d="M6 11c0 3.314 2.686 6 6 6s6-2.686 6-6V7a6 6 0 10-12 0v4z"
@@ -154,12 +153,7 @@
           stroke-width="2"
           stroke-linecap="round"
         />
-        <path
-          d="M12 19v2"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
+        <path d="M12 19v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </button>
 
@@ -170,7 +164,7 @@
           <div class="title">Assina AI</div>
           <div class="status" id="retell-status">Pronto para iniciar</div>
         </div>
-        <button class="btn" id="retell-close" style="flex:0 0 auto; padding:8px 10px;">
+        <button class="btn" id="retell-close" style="flex: 0 0 auto; padding: 8px 10px">
           ✕
         </button>
       </header>
@@ -184,102 +178,7 @@
       </div>
     </div>
 
-    <!-- Lógica Web Call (inicia só quando clicar) -->
-    <script type="module">
-      // Web SDK (doc: startCall({ accessToken })) :contentReference[oaicite:1]{index=1}
-      import RetellWebClient from "https://cdn.jsdelivr.net/npm/retell-client-js-sdk/+esm";
-
-      const agentId = "agent_faf6e879f83e5ab3e52f170d8a"; // seu agente
-      const panel = document.getElementById("retell-panel");
-      const fab = document.getElementById("retell-fab");
-      const btnStart = document.getElementById("retell-start");
-      const btnStop = document.getElementById("retell-stop");
-      const btnClose = document.getElementById("retell-close");
-      const statusEl = document.getElementById("retell-status");
-      const errEl = document.getElementById("retell-error");
-
-      const retellWebClient = new RetellWebClient();
-
-      const setStatus = (txt) => (statusEl.textContent = txt);
-      const showError = (msg) => {
-        errEl.style.display = "block";
-        errEl.textContent = msg;
-      };
-      const clearError = () => {
-        errEl.style.display = "none";
-        errEl.textContent = "";
-      };
-
-      const openPanel = () => panel.classList.add("open");
-      const closePanel = () => panel.classList.remove("open");
-
-      fab.addEventListener("click", () => {
-        clearError();
-        openPanel();
-      });
-
-      btnClose.addEventListener("click", () => closePanel());
-
-      // Eventos úteis (doc: on("call_started"/"call_ended")) :contentReference[oaicite:2]{index=2}
-      retellWebClient.on("call_started", () => {
-        setStatus("Em chamada… você pode falar");
-        btnStart.disabled = true;
-        btnStop.disabled = false;
-      });
-
-      retellWebClient.on("call_ended", () => {
-        setStatus("Chamada encerrada");
-        btnStart.disabled = false;
-        btnStop.disabled = true;
-      });
-
-      btnStart.addEventListener("click", async () => {
-        clearError();
-        setStatus("Conectando…");
-
-        btnStart.disabled = true;
-
-        try {
-          // Chama seu backend para criar o web call e pegar access_token :contentReference[oaicite:3]{index=3}
-          const resp = await fetch(`/api/create-web-call?agent_id=${encodeURIComponent(agentId)}`, {
-            method: "POST"
-          });
-
-          if (!resp.ok) {
-            const text = await resp.text();
-            throw new Error(`Erro ao criar web call (${resp.status}): ${text}`);
-          }
-
-          const data = await resp.json();
-
-          if (!data?.access_token) {
-            throw new Error("Resposta inválida: access_token não veio.");
-          }
-
-          // Inicia a chamada no navegador (vai pedir permissão do microfone)
-          await retellWebClient.startCall({
-            accessToken: data.access_token
-          });
-        } catch (e) {
-          console.error(e);
-          setStatus("Falha ao conectar");
-          btnStart.disabled = false;
-          btnStop.disabled = true;
-          showError(
-            "Não consegui iniciar a chamada. Confira se o endpoint /api/create-web-call está online e se sua RETELL_API_KEY está correta."
-          );
-        }
-      });
-
-      btnStop.addEventListener("click", () => {
-        try {
-          retellWebClient.stopCall(); // doc :contentReference[oaicite:4]{index=4}
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    </script>
-
+    <!-- Carrega seu app React -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
