@@ -32,29 +32,107 @@
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
     <style>
-      /* Botão flutuante estilo ChatDash */
+      /* ================================
+         BOTÃO FLUTUANTE (igual aos prints)
+         Estados:
+         - idle: "Iniciar chamada" (preto)
+         - connecting: "Conectando..." (cinza)
+         - active: "Encerrar chamada" (preto)
+      ================================= */
+
       #retell-fab {
         position: fixed;
         right: 18px;
         bottom: 18px;
-        width: 64px;
+
         height: 64px;
-        border-radius: 999px;
+        width: 320px;
+        max-width: calc(100vw - 36px);
+
         border: 0;
+        border-radius: 999px;
         cursor: pointer;
-        background: #0b1220;
-        color: #fff;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-        display: grid;
-        place-items: center;
+
+        background: #ffffff; /* container branco */
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+
         z-index: 999999;
+        -webkit-tap-highlight-color: transparent;
       }
 
       #retell-fab:active {
         transform: translateY(1px);
       }
 
-      /* Painelzinho simples */
+      #retell-fab:focus-visible {
+        outline: 3px solid rgba(0, 0, 0, 0.25);
+        outline-offset: 3px;
+      }
+
+      /* bolinha da esquerda (vazia) */
+      .retell-fab-knob {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+        flex: 0 0 auto;
+      }
+
+      /* "pílula" interna */
+      .retell-fab-pill {
+        flex: 1;
+        height: 100%;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 18px;
+
+        background: #111111; /* default: preto */
+        color: #ffffff;
+
+        transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
+      }
+
+      .retell-fab-icon {
+        width: 18px;
+        height: 18px;
+        color: currentColor;
+      }
+
+      .retell-fab-text {
+        font: 600 16px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        letter-spacing: -0.1px;
+        color: currentColor;
+        white-space: nowrap;
+      }
+
+      /* Estado: CONNECTING (cinza) */
+      #retell-fab[data-state="connecting"] {
+        cursor: default;
+      }
+      #retell-fab[data-state="connecting"] .retell-fab-pill {
+        background: #8f8f8f;
+        color: #ffffff;
+      }
+
+      /* Estado: ACTIVE (preto, texto Encerrar) */
+      #retell-fab[data-state="active"] .retell-fab-pill {
+        background: #111111;
+        color: #ffffff;
+      }
+
+      /* ================================
+         PAINEL DO ASSISTENTE (mantido)
+      ================================= */
+
       #retell-panel {
         position: fixed;
         right: 18px;
@@ -138,23 +216,21 @@
   <body>
     <div id="root"></div>
 
-    <!-- Botão flutuante -->
-    <button id="retell-fab" aria-label="Falar com assistente de voz">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M6 11c0 3.314 2.686 6 6 6s6-2.686 6-6V7a6 6 0 10-12 0v4z"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
-        <path
-          d="M4 11a8 8 0 0016 0"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
-        <path d="M12 19v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
+    <!-- Botão flutuante (layout igual ao print) -->
+    <button id="retell-fab" type="button" aria-label="Iniciar chamada com assistente" data-state="idle">
+      <span class="retell-fab-knob" aria-hidden="true"></span>
+
+      <span class="retell-fab-pill" aria-hidden="false">
+        <!-- ícone: telefone -->
+        <svg class="retell-fab-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M6.6 10.8c1.5 3 3.6 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.9.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.9.1.4 0 .8-.3 1.1L6.6 10.8z"
+            fill="currentColor"
+          />
+        </svg>
+
+        <span class="retell-fab-text" id="retell-fab-label">Iniciar chamada</span>
+      </span>
     </button>
 
     <!-- Painel do assistente -->
@@ -164,9 +240,7 @@
           <div class="title">Assina AI</div>
           <div class="status" id="retell-status">Pronto para iniciar</div>
         </div>
-        <button class="btn" id="retell-close" style="flex: 0 0 auto; padding: 8px 10px">
-          ✕
-        </button>
+        <button class="btn" id="retell-close" style="flex: 0 0 auto; padding: 8px 10px">✕</button>
       </header>
       <div class="body">
         Clique em <b>Iniciar</b>, permita o microfone e fale normalmente.
@@ -180,5 +254,94 @@
 
     <!-- Carrega seu app React -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Controle de estados do botão flutuante -->
+    <script>
+      (function () {
+        const fab = document.getElementById("retell-fab");
+        const fabLabel = document.getElementById("retell-fab-label");
+
+        const panel = document.getElementById("retell-panel");
+        const closeBtn = document.getElementById("retell-close");
+
+        const startBtn = document.getElementById("retell-start");
+        const stopBtn = document.getElementById("retell-stop");
+
+        function setState(state) {
+          // state: "idle" | "connecting" | "active"
+          fab.dataset.state = state;
+
+          if (state === "idle") {
+            fabLabel.textContent = "Iniciar chamada";
+          } else if (state === "connecting") {
+            fabLabel.textContent = "Conectando...";
+          } else if (state === "active") {
+            fabLabel.textContent = "Encerrar chamada";
+          }
+        }
+
+        // Exponha um hook global pra você plugar no Retell (no main.tsx):
+        // window.setRetellCallState("connecting"|"active"|"idle")
+        window.setRetellCallState = function (state) {
+          setState(state);
+        };
+
+        function openPanel() {
+          panel.classList.add("open");
+        }
+
+        function closePanel() {
+          panel.classList.remove("open");
+        }
+
+        // Clique no FAB:
+        // - idle: abre painel e vai pra connecting (inicia a chamada)
+        // - active: encerra chamada
+        // - connecting: ignora (pra não ficar spamando)
+        fab.addEventListener("click", () => {
+          const state = fab.dataset.state;
+
+          if (state === "connecting") return;
+
+          if (state === "active") {
+            // tenta encerrar usando teu botão existente
+            stopBtn?.click();
+            setState("idle");
+            return;
+          }
+
+          // idle
+          openPanel();
+          setState("connecting");
+
+          // tenta iniciar usando teu botão existente
+          startBtn?.click();
+
+          // Se você NÃO plugar o evento real do Retell,
+          // isso aqui faz o botão ir pra "active" após um tempinho.
+          // Quando você integrar, pode remover esse timeout e chamar setRetellCallState("active") no evento de connected.
+          window.__retellFallbackTimer && clearTimeout(window.__retellFallbackTimer);
+          window.__retellFallbackTimer = setTimeout(() => {
+            if (fab.dataset.state === "connecting") setState("active");
+          }, 1200);
+        });
+
+        // Botões do painel também controlam o estado do FAB
+        startBtn?.addEventListener("click", () => {
+          setState("connecting");
+        });
+
+        stopBtn?.addEventListener("click", () => {
+          setState("idle");
+        });
+
+        closeBtn?.addEventListener("click", () => {
+          closePanel();
+        });
+
+        // Estado inicial
+        setState("idle");
+      })();
+    </script>
   </body>
 </html>
